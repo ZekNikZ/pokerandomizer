@@ -1,0 +1,117 @@
+.pokeballs {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.pokeballContainer {
+  position: relative;
+  width: 150px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &::before {
+    position: absolute;
+    z-index: -1;
+    content: "";
+    inset: -5px;
+    border-radius: inherit;
+    background: conic-gradient(#f5bf42, #997728 10%, #f5bf42 20%, #9f8545 40%, #f5bf42 50%, #906c11 80%, #f5bf42 90%);
+    filter: blur(25px);
+    opacity: 0.6;
+
+    animation: rotate 5s linear infinite forwards;
+
+    transition: all 0.5s;
+  }
+
+  &.rollIn::before {
+    inset: 20px;
+    opacity: 0;
+    animation-play-state: paused;
+  }
+
+  &:hover .pokeball {
+    width: calc(100% + 10px);
+  }
+
+  &:hover::before {
+    inset: -25px;
+  }
+}
+
+@keyframes rotate {
+  100% {
+    rotate: 360deg;
+  }
+}
+
+.rollIn {
+  animation: roll-in 3s ease-out;
+}
+
+@keyframes roll-in {
+  0% {
+    transform: translateX(942px) rotateZ(360deg);
+    opacity: 0;
+  }
+
+  100% {
+    transform: 0;
+    opacity: 1;
+  }
+}
+
+.pokeball, .pokemon {
+  position: absolute;
+  width: 100%;
+  aspect-ratio: 1;
+  image-rendering: pixelated;
+  transition: all 0.5s;
+}
+
+.pokemon {
+  width: 0;
+}
+
+.open {
+  & .pokeball,&:hover .pokeball {
+    width: 50%;
+  }
+
+  & .pokeball {
+    opacity: 0;
+  }
+  
+  & .pokemon {
+    width: 150%;
+  }
+
+  &::before, &:hover::before {
+    inset: 10px;
+  }
+}
+
+.text {
+  position: absolute;
+  z-index: 2;
+  color: white;
+  text-shadow: rgba(0,0,0,1) 0px 0px 4px;
+  text-align: center;
+  transition: all 0.5s;
+  
+  bottom: 40px;
+  opacity: 0;
+  font-size: 0;
+}
+
+.open .text {
+  bottom: -30px;
+  opacity: 1;
+  font-size: 30px;
+}

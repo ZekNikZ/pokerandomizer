@@ -1,0 +1,10 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 100px;
+  min-height: 100vh;
+  background: #3c3c3c;
+  overflow: hidden;
+}
