@@ -9,6 +9,7 @@ export default function HomePage() {
   const teams = useGlobalStore((state) => state.teams);
   const createTeams = useGlobalStore((state) => state.createTeams);
   const rerollTeams = useGlobalStore((state) => state.rerollTeams);
+  const openAllPokeballs = useGlobalStore((state) => state.openAllPokeballs);
   const settings = useGlobalStore((state) => state.settings);
   const changeSetting = useGlobalStore((state) => state.changeSetting);
 
@@ -20,6 +21,10 @@ export default function HomePage() {
 
   const rerollTeamsPressed = () => {
     void rerollTeams();
+  };
+
+  const openAllPressed = () => {
+    void openAllPokeballs();
   };
 
   const settingsPressed = () => {
@@ -43,6 +48,12 @@ export default function HomePage() {
           onClick={rerollTeamsPressed}
         >
           Reroll Teams
+        </button>
+        <button
+          className="rounded-md border-2 border-gray-500 bg-gray-300 px-3 py-2 uppercase text-black hover:bg-gray-400"
+          onClick={openAllPressed}
+        >
+          Open All Pokeballs
         </button>
         <button
           className="rounded-md border-2 border-gray-500 bg-gray-300 px-3 py-2 uppercase text-black hover:bg-gray-400"

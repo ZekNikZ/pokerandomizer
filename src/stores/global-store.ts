@@ -32,6 +32,7 @@ export type GlobalActions = {
   clearTeams: () => void;
   rerollTeams: () => Promise<void>;
   openPokeball: (uuid: string) => void;
+  openAllPokeballs: () => void;
   changeSetting: <K extends keyof GlobalState["settings"]>(
     key: K,
     value: GlobalState["settings"][K]
@@ -154,6 +155,13 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
             });
           })
         ),
+      openAllPokeballs: () => {
+        get()
+          .teams.flatMap((team) =>
+            team.pokemon.filter((pokemon) => !pokemon.pokeballOpen).map((pokemon) => pokemon.uuid)
+          )
+          .forEach((uuid, i) => setTimeout(() => void get().openPokeball(uuid), i * 500));
+      },
       changeSetting: <K extends keyof GlobalState["settings"]>(
         key: K,
         value: GlobalState["settings"][K]

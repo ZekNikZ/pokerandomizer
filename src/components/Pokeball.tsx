@@ -6,6 +6,7 @@ import styles from "./pokeballs.module.scss";
 import { useGlobalStore } from "@/stores/global-store-provider";
 import { Aldrich } from "next/font/google";
 import useSound from "use-sound";
+import { useEffect, useState } from "react";
 
 const aldrich = Aldrich({ subsets: ["latin"], weight: "400" });
 
@@ -27,13 +28,20 @@ export function Pokeball({ pokemonUuid }: Props) {
   );
 
   const [playSound] = useSound(pokemonData!.cry);
+  const [soundPlayed, setSoundPlayed] = useState(false);
+
+  useEffect(() => {
+    if (pokemon?.pokeballOpen && !soundPlayed) {
+      setSoundPlayed(true);
+      if (playSoundWhenOpeningPokeball) {
+        playSound();
+      }
+    }
+  }, [playSound, playSoundWhenOpeningPokeball, pokemon?.pokeballOpen, soundPlayed]);
 
   const onClick = () => {
     if (!pokemon?.pokeballOpen) {
       openPokeball(pokemonUuid);
-      if (playSoundWhenOpeningPokeball) {
-        playSound();
-      }
     }
   };
 
