@@ -27,25 +27,25 @@ export default function HomePage() {
   };
 
   return (
-    <main className="flex flex-col items-center justify-center gap-36 min-h-screen overflow-hidden bg-gray-800">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-36 overflow-hidden bg-gray-800">
       {teams.map((team) => (
         <TeamPokeballs key={team.uuid} teamId={team.uuid} />
       ))}
       <div className="flex gap-4">
         <button
-          className="px-3 py-2 bg-gray-300 text-black rounded-md uppercase border-gray-500 border-2 hover:bg-gray-400"
+          className="rounded-md border-2 border-gray-500 bg-gray-300 px-3 py-2 uppercase text-black hover:bg-gray-400"
           onClick={newTeamsPressed}
         >
           New Teams
         </button>
         <button
-          className="px-3 py-2 bg-gray-300 text-black rounded-md uppercase border-gray-500 border-2 hover:bg-gray-400"
+          className="rounded-md border-2 border-gray-500 bg-gray-300 px-3 py-2 uppercase text-black hover:bg-gray-400"
           onClick={rerollTeamsPressed}
         >
           Reroll Teams
         </button>
         <button
-          className="px-3 py-2 bg-gray-300 text-black rounded-md uppercase border-gray-500 border-2 hover:bg-gray-400"
+          className="rounded-md border-2 border-gray-500 bg-gray-300 px-3 py-2 uppercase text-black hover:bg-gray-400"
           onClick={settingsPressed}
         >
           Settings
@@ -53,7 +53,7 @@ export default function HomePage() {
       </div>
       <Dialog open={settingsOpen} onClose={() => setSettingsOpen(false)} className="relative z-50">
         <div className="fixed inset-0 flex w-screen items-center justify-center p-2">
-          <DialogPanel className="flex flex-col max-w-lg gap-2 border-2 bg-gray-800 text-white p-4 rounded-lg shadow-lg">
+          <DialogPanel className="flex max-w-lg flex-col gap-2 rounded-lg border-2 bg-gray-800 p-4 text-white shadow-lg">
             <DialogTitle className="font-bold">Settings</DialogTitle>
             {Object.entries(settings)
               .filter(([_, value]) => typeof value === "boolean")
