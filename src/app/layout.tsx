@@ -1,8 +1,7 @@
-import "@/styles/globals.css";
+import "@/styles/globals.scss";
 
 import { type Metadata } from "next";
 import { TRPCReactProvider } from "@/trpc/react";
-import classes from "./index.module.scss";
 import { GlobalStoreProvider } from "@/stores/global-store-provider";
 import { getPokemonData } from "@/client/pokeapi-client";
 
@@ -13,15 +12,13 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const pokemon = await getPokemonData(["zygarde-10-power-construct", "pikachu"]);
+  const pokemon = await getPokemonData(["zygarde-10-power-construct", "pikachu", "snorlax"]);
 
   return (
     <html lang="en">
       <body>
         <TRPCReactProvider>
-          <GlobalStoreProvider serverData={{ pokemon }}>
-            <main className={classes.main}>{children}</main>
-          </GlobalStoreProvider>
+          <GlobalStoreProvider serverData={{ pokemon }}>{children}</GlobalStoreProvider>
         </TRPCReactProvider>
       </body>
     </html>

@@ -1,4 +1,4 @@
-export type PokemonType =
+export type PokemonTypeName =
   | "normal"
   | "fire"
   | "water"
@@ -18,10 +18,15 @@ export type PokemonType =
   | "steel"
   | "fairy";
 
+export interface PokemonType {
+  id: number;
+  name: PokemonTypeName;
+}
+
 export interface Pokemon {
   id: string;
   name: string;
-  types: string[];
+  types: PokemonType[];
   sprite: string;
   cry: string;
 }

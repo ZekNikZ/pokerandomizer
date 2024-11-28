@@ -1,5 +1,5 @@
 import { gql } from "@/__generated__";
-import { type Pokemon } from "@/types/pokemon-types";
+import { type PokemonTypeName, type Pokemon } from "@/types/pokemon-types";
 import { HttpLink, InMemoryCache, ApolloClient } from "@apollo/client";
 import { registerApolloClient } from "@apollo/experimental-nextjs-app-support";
 
@@ -28,6 +28,7 @@ export async function getPokemonData(pokemon: string[]): Promise<Record<string, 
           types: pokemon_v2_pokemontypes {
             type: pokemon_v2_type {
               name
+              id
             }
           }
           sprites: pokemon_v2_pokemonsprites {
@@ -50,7 +51,10 @@ export async function getPokemonData(pokemon: string[]): Promise<Record<string, 
       {
         id: pokemon.name,
         name: pokemon.species!.names[0]!.name,
-        types: pokemon.types.map((type) => type.type!.name),
+        types: pokemon.types.map((type) => ({
+          id: type.type!.id,
+          name: type.type!.name as PokemonTypeName,
+        })),
         sprite: pokemon.sprites[0]?.default as string,
         cry: pokemon.cries[0]?.cry as string,
       },

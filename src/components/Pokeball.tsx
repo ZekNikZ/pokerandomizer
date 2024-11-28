@@ -21,11 +21,20 @@ export function Pokeball({ pokemonUuid }: Props) {
   const pokemonData = useGlobalStore((state) =>
     pokemon ? state.pokemon[pokemon?.pokemonId] : undefined
   );
+  const modernTypeIcons = useGlobalStore((state) => state.settings["Modern Type Icons"]);
+  const playSoundWhenOpeningPokeball = useGlobalStore(
+    (state) => state.settings["Play Pokemon Sound When Opening Pokeball"]
+  );
+
   const [playSound] = useSound(pokemonData!.cry);
 
   const onClick = () => {
-    openPokeball(pokemonUuid);
-    playSound();
+    if (!pokemon?.pokeballOpen) {
+      openPokeball(pokemonUuid);
+      if (playSoundWhenOpeningPokeball) {
+        playSound();
+      }
+    }
   };
 
   return (
@@ -39,6 +48,20 @@ export function Pokeball({ pokemonUuid }: Props) {
       <img src="/images/pokeball.png" className={styles.pokeball} alt="pokeball" />
       <img src={pokemonData?.sprite} className={styles.pokemon} alt="" />
       <div className={`${aldrich.className} ${styles.text}`}>{pokemonData?.name}</div>
+      <div className={styles.types}>
+        {pokemonData?.types.map((type) => (
+          <img
+            key={type.id}
+            className={styles.typeImage}
+            src={
+              modernTypeIcons
+                ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-viii/brilliant-diamond-and-shining-pearl/${type.id}.png`
+                : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-vii/ultra-sun-ultra-moon/${type.id}.png`
+            }
+            alt={type.name}
+          />
+        ))}
+      </div>
     </div>
   );
 }
