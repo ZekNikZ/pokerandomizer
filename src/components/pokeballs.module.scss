@@ -12,15 +12,32 @@
     position: absolute;
     z-index: -1;
     content: "";
-    inset: -5px;
+    inset: 50px;
     border-radius: inherit;
-    background: conic-gradient(#f5bf42, #997728 10%, #f5bf42 20%, #9f8545 40%, #f5bf42 50%, #906c11 80%, #f5bf42 90%);
+    background: conic-gradient(#88d2b8, #629483 10%, #88d2b8 20%, #26654f 40%, #88d2b8 50%, #3e715f 80%, #88d2b8 90%);
     filter: blur(25px);
     opacity: 0.6;
 
     animation: rotate 5s linear infinite forwards;
 
     transition: all 0.5s;
+  }
+
+  &.tier1::before {
+    background: conic-gradient(#f5bf42, #997728 10%, #f5bf42 20%, #9f8545 40%, #f5bf42 50%, #906c11 80%, #f5bf42 90%);
+  }
+  &.tier2::before {
+    background: conic-gradient(#9e2dd7, #7f32a5 10%, #9e2dd7 20%, #50136e 40%, #9e2dd7 50%, #5d3a6e 80%, #9e2dd7 90%);
+  }
+  &.tier3::before {
+    background: conic-gradient(#4e85e4, #4974bd 10%, #4e85e4 20%, #1a3b72 40%, #4e85e4 50%, #254171 80%, #4e85e4 90%);
+  }
+  &.tier4::before {
+    background: conic-gradient(#88d2b8, #629483 10%, #88d2b8 20%, #26654f 40%, #88d2b8 50%, #3e715f 80%, #88d2b8 90%);
+  }
+
+  &.showTier::before {
+    inset: -5px;
   }
 
   &.rollIn::before {
@@ -109,7 +126,7 @@
 }
 
 .open .text {
-  bottom: -40px;
+  bottom: -45px;
   opacity: 1;
   font-size: 30px;
 }

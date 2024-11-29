@@ -30,3 +30,8 @@ export interface Pokemon {
   sprite: string;
   cry: string;
 }
+
+export interface PokemonSet {
+  id: string;
+  tier: number;
+}

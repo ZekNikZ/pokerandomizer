@@ -1,4 +1,4 @@
-import { type Pokemon } from "@/types/pokemon-types";
+import { type PokemonSet, type Pokemon } from "@/types/pokemon-types";
 import { uuidv4 } from "@/utils/uuids";
 import { produce } from "immer";
 import { createStore } from "zustand/vanilla";
@@ -18,12 +18,14 @@ export type GlobalState = {
     previousPicks: string[];
   }[];
   pokemon: Record<string, Pokemon>;
+  pokemonSets: Record<string, PokemonSet>;
   settings: {
     "Prevent Same Team Duplicates": boolean;
     "Prevent Same Round Duplicates": boolean;
     "Prevent Cross Team Duplicates": boolean;
     "Modern Type Icons": boolean;
     "Play Pokemon Sound When Opening Pokeball": boolean;
+    "Pokemon Tier Hints": boolean;
   };
 };
 
@@ -44,12 +46,31 @@ export type GlobalStore = GlobalState & GlobalActions;
 export const defaultInitState: GlobalState = {
   teams: [],
   pokemon: {},
+  pokemonSets: {
+    "zygarde-10-power-construct": {
+      id: "zygarde-10-power-construct",
+      tier: 1,
+    },
+    pikachu: {
+      id: "pikachu",
+      tier: 2,
+    },
+    snorlax: {
+      id: "snorlax",
+      tier: 3,
+    },
+    charizard: {
+      id: "charizard",
+      tier: 4,
+    },
+  },
   settings: {
     "Prevent Same Team Duplicates": true,
     "Prevent Same Round Duplicates": true,
     "Prevent Cross Team Duplicates": true,
     "Modern Type Icons": true,
     "Play Pokemon Sound When Opening Pokeball": true,
+    "Pokemon Tier Hints": true,
   },
 };
 
@@ -160,7 +181,7 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
           .teams.flatMap((team) =>
             team.pokemon.filter((pokemon) => !pokemon.pokeballOpen).map((pokemon) => pokemon.uuid)
           )
-          .forEach((uuid, i) => setTimeout(() => void get().openPokeball(uuid), i * 500));
+          .forEach((uuid, i) => setTimeout(() => void get().openPokeball(uuid), i * 1000));
       },
       changeSetting: <K extends keyof GlobalState["settings"]>(
         key: K,

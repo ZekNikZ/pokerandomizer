@@ -4,11 +4,8 @@
 import clsx from "clsx";
 import styles from "./pokeballs.module.scss";
 import { useGlobalStore } from "@/stores/global-store-provider";
-import { Aldrich } from "next/font/google";
 import useSound from "use-sound";
 import { useEffect, useState } from "react";
-
-const aldrich = Aldrich({ subsets: ["latin"], weight: "400" });
 
 interface Props {
   pokemonUuid: string;
@@ -22,10 +19,14 @@ export function Pokeball({ pokemonUuid }: Props) {
   const pokemonData = useGlobalStore((state) =>
     pokemon ? state.pokemon[pokemon?.pokemonId] : undefined
   );
+  const pokemonSet = useGlobalStore((state) =>
+    pokemon ? state.pokemonSets[pokemon?.pokemonId] : undefined
+  );
   const modernTypeIcons = useGlobalStore((state) => state.settings["Modern Type Icons"]);
   const playSoundWhenOpeningPokeball = useGlobalStore(
     (state) => state.settings["Play Pokemon Sound When Opening Pokeball"]
   );
+  const pokemonTierHints = useGlobalStore((state) => state.settings["Pokemon Tier Hints"]);
 
   const [playSound] = useSound(pokemonData!.cry);
   const [soundPlayed, setSoundPlayed] = useState(false);
@@ -47,15 +48,16 @@ export function Pokeball({ pokemonUuid }: Props) {
 
   return (
     <div
-      className={clsx(styles.pokeballContainer, {
+      className={clsx(styles.pokeballContainer, styles[`tier${pokemonSet?.tier ?? 0}`], {
         [styles.rollIn!]: pokemon?.animatingIn,
         [styles.open!]: pokemon?.pokeballOpen,
+        [styles.showTier!]: pokemonTierHints,
       })}
       onClick={() => void onClick()}
     >
       <img src="/images/pokeball.png" className={styles.pokeball} alt="pokeball" />
       <img src={pokemonData?.sprite} className={styles.pokemon} alt="" />
-      <div className={`${aldrich.className} ${styles.text}`}>{pokemonData?.name}</div>
+      <div className={styles.text}>{pokemonData?.name}</div>
       <div className={styles.types}>
         {pokemonData?.types.map((type) => (
           <img

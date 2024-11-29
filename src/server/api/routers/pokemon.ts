@@ -26,7 +26,7 @@ export const pokemonRouter = createTRPCRouter({
                 },
                 {
                   uuid: uuidv4(),
-                  pokemonId: "zygarde-10-power-construct",
+                  pokemonId: "charizard",
                 },
                 {
                   uuid: uuidv4(),
