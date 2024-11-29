@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { uuidv4 } from "@/utils/uuids";
+import _ from "lodash";
 
 export const pokemonRouter = createTRPCRouter({
   generateTeams: publicProcedure
@@ -19,7 +20,7 @@ export const pokemonRouter = createTRPCRouter({
           ...Object.fromEntries(
             input.teamUuids.map((teamUuid) => [
               teamUuid,
-              [
+              _.shuffle([
                 {
                   uuid: uuidv4(),
                   pokemonId: "zygarde-10-power-construct",
@@ -44,7 +45,7 @@ export const pokemonRouter = createTRPCRouter({
                   uuid: uuidv4(),
                   pokemonId: "snorlax",
                 },
-              ],
+              ]),
             ])
           ),
         },
