@@ -33,7 +33,8 @@
     background: conic-gradient(#4e85e4, #4974bd 10%, #4e85e4 20%, #1a3b72 40%, #4e85e4 50%, #254171 80%, #4e85e4 90%);
   }
   &.tier4::before {
-    background: conic-gradient(#88d2b8, #629483 10%, #88d2b8 20%, #26654f 40%, #88d2b8 50%, #3e715f 80%, #88d2b8 90%);
+    // background: conic-gradient(#88d2b8, #629483 10%, #88d2b8 20%, #26654f 40%, #88d2b8 50%, #3e715f 80%, #88d2b8 90%);
+    background: conic-gradient(#ffffff, #929292 10%, #ffffff 20%, #727272 40%, #ffffff 50%, #8f8f8f 80%, #ffffff 90%);
   }
 
   &.showTier::before {
