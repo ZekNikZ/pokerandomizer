@@ -14,6 +14,7 @@ export default function HomePage() {
   const nextTeamNames = useGlobalStore((state) => state.nextTeamNames);
   const changeSetting = useGlobalStore((state) => state.changeSetting);
   const changeNextTeamName = useGlobalStore((state) => state.changeNextTeamName);
+  const postTeamsToDiscord = useGlobalStore((state) => state.postTeamsToDiscord);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [newRoundOpen, setNewRoundOpen] = useState(false);
@@ -27,14 +28,6 @@ export default function HomePage() {
   const newRoundInitiated = () => {
     setNewRoundOpen(false);
     void createTeams();
-  };
-
-  const rerollTeamsPressed = () => {
-    void rerollTeams();
-  };
-
-  const openAllPressed = () => {
-    void openAllPokeballs();
   };
 
   const settingsPressed = () => {
@@ -55,16 +48,24 @@ export default function HomePage() {
         </button>
         <button
           className="rounded-md border-2 border-gray-500 bg-gray-300 px-3 py-2 uppercase text-black hover:bg-gray-400"
-          onClick={rerollTeamsPressed}
+          onClick={rerollTeams}
         >
           Reroll Teams
         </button>
         <button
           className="rounded-md border-2 border-gray-500 bg-gray-300 px-3 py-2 uppercase text-black hover:bg-gray-400"
-          onClick={openAllPressed}
+          onClick={openAllPokeballs}
         >
           Open All Pokeballs
         </button>
+        {!settings["Auto Post Teams to Discord"] && (
+          <button
+            className="rounded-md border-2 border-gray-500 bg-gray-300 px-3 py-2 uppercase text-black hover:bg-gray-400"
+            onClick={postTeamsToDiscord}
+          >
+            Post Teams to Discord
+          </button>
+        )}
         <button
           className="rounded-md border-2 border-gray-500 bg-gray-300 px-3 py-2 uppercase text-black hover:bg-gray-400"
           onClick={settingsPressed}

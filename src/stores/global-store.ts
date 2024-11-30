@@ -27,6 +27,7 @@ export type GlobalState = {
     "Modern Type Icons": boolean;
     "Play Pokemon Sound When Opening Pokeball": boolean;
     "Pokemon Tier Hints": boolean;
+    "Auto Post Teams to Discord": boolean;
   };
 };
 
@@ -41,6 +42,7 @@ export type GlobalActions = {
     value: GlobalState["settings"][K]
   ) => void;
   changeNextTeamName: (index: number, name: string) => void;
+  postTeamsToDiscord: () => Promise<void>;
 };
 
 export type GlobalStore = GlobalState & GlobalActions;
@@ -49,24 +51,7 @@ export const defaultInitState: GlobalState = {
   teams: [],
   nextTeamNames: ["Team 1", "Team 2", ""],
   pokemon: {},
-  pokemonSets: {
-    "zygarde-10-power-construct": {
-      id: "zygarde-10-power-construct",
-      tier: 1,
-    },
-    pikachu: {
-      id: "pikachu",
-      tier: 2,
-    },
-    snorlax: {
-      id: "snorlax",
-      tier: 3,
-    },
-    charizard: {
-      id: "charizard",
-      tier: 4,
-    },
-  },
+  pokemonSets: {},
   settings: {
     "Prevent Same Team Duplicates": true,
     "Prevent Same Round Duplicates": true,
@@ -74,6 +59,7 @@ export const defaultInitState: GlobalState = {
     "Modern Type Icons": true,
     "Play Pokemon Sound When Opening Pokeball": true,
     "Pokemon Tier Hints": true,
+    "Auto Post Teams to Discord": true,
   },
 };
 
@@ -96,7 +82,7 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
                 })),
             }));
             const { teams, settings } = get();
-            const picks = await api.pokemon.generateTeams.query({
+            const picks = await api.pokemon.generateTeams.mutate({
               teamUuids: teams.map((team) => team.uuid),
               preventSameTeamDuplicates: settings["Prevent Same Team Duplicates"],
               preventCrossTeamDuplicates: settings["Prevent Cross Team Duplicates"],
@@ -136,7 +122,7 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
           },
           rerollTeams: async () => {
             const { teams, settings } = get();
-            const picks = await api.pokemon.generateTeams.query({
+            const picks = await api.pokemon.generateTeams.mutate({
               teamUuids: teams.map((team) => team.uuid),
               preventSameTeamDuplicates: settings["Prevent Same Team Duplicates"],
               preventCrossTeamDuplicates: settings["Prevent Cross Team Duplicates"],
@@ -181,6 +167,12 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
                     }
                   });
                 });
+
+                if (
+                  state.teams.every((team) => team.pokemon.every((pokemon) => pokemon.pokeballOpen))
+                ) {
+                  void get().postTeamsToDiscord();
+                }
               })
             ),
           openAllPokeballs: () => {
@@ -208,6 +200,15 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
                 state.nextTeamNames[index] = name;
               })
             ),
+          postTeamsToDiscord: async () => {
+            await api.pokemon.postTeamsToDiscord.mutate({
+              teams: get().teams.map((team) => ({
+                uuid: team.uuid,
+                owner: team.owner,
+                pokemon: team.pokemon.map((pokemon) => pokemon.pokemonId),
+              })),
+            });
+          },
         }),
         {
           name: "global-store",
