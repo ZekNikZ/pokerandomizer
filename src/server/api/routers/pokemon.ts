@@ -82,7 +82,11 @@ export const pokemonRouter = createTRPCRouter({
           // TODO: Post to Discord
           // Look up Discord Webhooks for this. Use the process.env.DISCORD_WEBHOOK_URL environment variable and format it as you feel
           // If you want to get really fancy, you can call getPokemonData() here as well to grab the sprites and stuff too
-          await (await discordClient.users.fetch(team.owner)).send({ content: teamString });
+          try {
+            await (await discordClient.users.fetch(team.owner)).send({ content: teamString });
+          } catch (error) {
+            console.error("Error posting team to Discord:", error);
+          }
         })
       );
     }),
