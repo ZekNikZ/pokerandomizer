@@ -17,7 +17,7 @@ export type GlobalState = {
     }[];
     previousPicks: string[];
   }[];
-  nextTeamNames: string[];
+  nextTeamIds: string[];
   pokemon: Record<string, Pokemon>;
   pokemonSets: Record<string, PokemonSet>;
   settings: {
@@ -29,6 +29,7 @@ export type GlobalState = {
     "Pokemon Tier Hints": boolean;
     "Auto Post Teams to Discord": boolean;
   };
+  discordUserMapping: Record<string, string>;
 };
 
 export type GlobalActions = {
@@ -41,7 +42,7 @@ export type GlobalActions = {
     key: K,
     value: GlobalState["settings"][K]
   ) => void;
-  changeNextTeamName: (index: number, name: string) => void;
+  changeNextTeamId: (index: number, name: string) => void;
   postTeamsToDiscord: () => Promise<void>;
 };
 
@@ -49,7 +50,7 @@ export type GlobalStore = GlobalState & GlobalActions;
 
 export const defaultInitState: GlobalState = {
   teams: [],
-  nextTeamNames: ["Team 1", "Team 2", ""],
+  nextTeamIds: ["133105799818903552", "133105799818903552", ""],
   pokemon: {},
   pokemonSets: {},
   settings: {
@@ -61,6 +62,7 @@ export const defaultInitState: GlobalState = {
     "Pokemon Tier Hints": true,
     "Auto Post Teams to Discord": true,
   },
+  discordUserMapping: {},
 };
 
 export const createGlobalStore = (initState?: Partial<GlobalState>) => {
@@ -72,8 +74,8 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
           ...initState,
           createTeams: async () => {
             set((state) => ({
-              teams: state.nextTeamNames
-                .filter((name) => name)
+              teams: state.nextTeamIds
+                .filter((id) => id)
                 .map((owner) => ({
                   uuid: uuidv4(),
                   owner,
@@ -194,10 +196,10 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
                 [key]: value,
               },
             })),
-          changeNextTeamName: (index: number, name: string) =>
+          changeNextTeamId: (index: number, id: string) =>
             set(
               produce((state: GlobalState) => {
-                state.nextTeamNames[index] = name;
+                state.nextTeamIds[index] = id;
               })
             ),
           postTeamsToDiscord: async () => {
@@ -213,7 +215,7 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
         {
           name: "global-store",
           partialize: (state) => ({
-            nextTeamNames: state.nextTeamNames,
+            nextTeamIds: state.nextTeamIds,
             settings: state.settings,
           }),
         }
