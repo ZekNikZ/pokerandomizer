@@ -9,6 +9,8 @@ export const env = createEnv({
   server: {
     NODE_ENV: z.enum(["development", "test", "production"]),
     DISCORD_WEBHOOK_URL: z.string(),
+    DISCORD_BOT_TOKEN: z.string(),
+    DISCORD_GUILD_ID: z.string(),
     SPREADSHEET_ID: z.string(),
     API_KEY: z.string(),
   },
@@ -29,6 +31,8 @@ export const env = createEnv({
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
     DISCORD_WEBHOOK_URL: process.env.DISCORD_WEBHOOK_URL,
+    DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN,
+    DISCORD_GUILD_ID: process.env.DISCORD_GUILD_ID,
     SPREADSHEET_ID: process.env.SPREADSHEET_ID,
     API_KEY: process.env.API_KEY,
     

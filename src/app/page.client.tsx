@@ -2,7 +2,7 @@
 
 import { TeamPokeballs } from "@/components/TeamPokeballs";
 import { useGlobalStore } from "@/stores/global-store-provider";
-import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { Dialog, DialogPanel, DialogTitle, Field, Label, Select } from "@headlessui/react";
 import { useRef, useState } from "react";
 
 export default function HomePage() {
@@ -11,14 +11,15 @@ export default function HomePage() {
   const rerollTeams = useGlobalStore((state) => state.rerollTeams);
   const openAllPokeballs = useGlobalStore((state) => state.openAllPokeballs);
   const settings = useGlobalStore((state) => state.settings);
-  const nextTeamNames = useGlobalStore((state) => state.nextTeamNames);
+  const nextTeamIds = useGlobalStore((state) => state.nextTeamIds);
   const changeSetting = useGlobalStore((state) => state.changeSetting);
-  const changeNextTeamName = useGlobalStore((state) => state.changeNextTeamName);
+  const changeNextTeamName = useGlobalStore((state) => state.changeNextTeamId);
   const postTeamsToDiscord = useGlobalStore((state) => state.postTeamsToDiscord);
+  const discordUserMapping = useGlobalStore((state) => state.discordUserMapping);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [newRoundOpen, setNewRoundOpen] = useState(false);
-  const firstInputRef = useRef<HTMLInputElement>(null);
+  const firstInputRef = useRef<HTMLSelectElement>(null);
 
   const newRoundPressed = () => {
     setNewRoundOpen(true);
@@ -115,16 +116,24 @@ export default function HomePage() {
         <div className="fixed inset-0 flex w-screen items-center justify-center p-2">
           <DialogPanel className="flex max-w-lg flex-col gap-2 rounded-lg border-2 bg-gray-800 p-4 text-white shadow-lg">
             <DialogTitle className="text-center font-bold">New Round</DialogTitle>
-            {nextTeamNames.map((value, index) => (
+            {nextTeamIds.map((value, index) => (
               <div key={index} className="flex items-center gap-2">
-                <input
-                  ref={index === 0 ? firstInputRef : undefined}
-                  value={value}
-                  onChange={(event) => void changeNextTeamName(index, event.target.value)}
-                  placeholder="Team Name"
-                  onKeyDown={(event) => event.key === "Enter" && newRoundInitiated()}
-                  className="h-4 w-full rounded border-gray-500 px-2 py-4 text-black"
-                />
+                <Field className="w-full">
+                  <Label>Team {index + 1}</Label>
+                  <Select
+                    ref={index === 0 ? firstInputRef : undefined}
+                    value={value}
+                    onChange={(event) => void changeNextTeamName(index, event.target.value)}
+                    onKeyDown={(event) => event.key === "Enter" && newRoundInitiated()}
+                    className="w-full rounded border-gray-500 px-2 py-2 text-black"
+                  >
+                    {Object.entries(discordUserMapping).map(([id, name]) => (
+                      <option key={id} value={id} className="font-inherit text-black">
+                        {name}
+                      </option>
+                    ))}
+                  </Select>
+                </Field>
               </div>
             ))}
             <button

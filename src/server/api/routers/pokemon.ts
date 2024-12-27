@@ -3,6 +3,7 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { uuidv4 } from "@/utils/uuids";
 import _ from "lodash";
 import { getPokemonSetData } from "@/client/google-sheets-client";
+import discordClient from "@/client/discord-bot-client";
 
 export const pokemonRouter = createTRPCRouter({
   generateTeams: publicProcedure
@@ -83,6 +84,11 @@ export const pokemonRouter = createTRPCRouter({
           // TODO: Post to Discord
           // Look up Discord Webhooks for this. Use the process.env.DISCORD_WEBHOOK_URL environment variable and format it as you feel
           // If you want to get really fancy, you can call getPokemonData() here as well to grab the sprites and stuff too
+          try {
+            await (await discordClient.users.fetch(team.owner)).send({ content: teamString });
+          } catch (error) {
+            console.error("Error posting team to Discord:", error);
+          }
 
           const payload = {
             content: "Testing Posting to Discord",
