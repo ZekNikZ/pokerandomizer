@@ -18,7 +18,9 @@ export const pokemonRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       // Fetch data from Google Sheets
       const pokemonSets = await getPokemonSetData();
-
+      const availablePokemon = pokemonSets.map((set) => ({
+        uuid: uuidv4(),
+         pokemonId: set.id}));
       return {
         teams: Object.fromEntries(
           input.teamUuids.map((teamUuid) => {
@@ -81,7 +83,29 @@ export const pokemonRouter = createTRPCRouter({
           // TODO: Post to Discord
           // Look up Discord Webhooks for this. Use the process.env.DISCORD_WEBHOOK_URL environment variable and format it as you feel
           // If you want to get really fancy, you can call getPokemonData() here as well to grab the sprites and stuff too
-          console.log(teamString);
+
+          const payload = {
+            content: "Testing Posting to Discord",
+          };
+          try {
+            const webhook = process.env.DISCORD_WEBHOOK_URL!;
+            const response = await fetch(webhook, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(
+                //teamString,
+                payload,
+              ),
+            });
+
+            if (!response.ok) {
+              throw new Error("Failed to post to Discord");
+            }
+          } catch (error) {
+            console.error(error);
+          }
         })
       );
     }),

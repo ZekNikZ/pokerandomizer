@@ -52,7 +52,6 @@ export async function getPokemonSetData(): Promise<Record<string, PokemonSet>> {
       evs,
     };
   });
-
   //console.log(sets);
   return Object.fromEntries(sets.map((set) => [set.id, set]));
 }
