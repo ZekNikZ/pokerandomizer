@@ -19,7 +19,9 @@ export const pokemonRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       // Fetch data from Google Sheets
       const pokemonSets = await getPokemonSetData();
-
+      const availablePokemon = pokemonSets.map((set) => ({
+        uuid: uuidv4(),
+         pokemonId: set.id}));
       return {
         teams: Object.fromEntries(
           input.teamUuids.map((teamUuid) => {
@@ -86,6 +88,29 @@ export const pokemonRouter = createTRPCRouter({
             await (await discordClient.users.fetch(team.owner)).send({ content: teamString });
           } catch (error) {
             console.error("Error posting team to Discord:", error);
+          }
+
+          const payload = {
+            content: "Testing Posting to Discord",
+          };
+          try {
+            const webhook = process.env.DISCORD_WEBHOOK_URL!;
+            const response = await fetch(webhook, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(
+                //teamString,
+                payload,
+              ),
+            });
+
+            if (!response.ok) {
+              throw new Error("Failed to post to Discord");
+            }
+          } catch (error) {
+            console.error(error);
           }
         })
       );
