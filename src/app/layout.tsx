@@ -23,12 +23,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
   // TODO: EVAN: once we are properly grabbing data from Google Sheets,
   // we need to modify this to only request data for the pokemon that are in the sheet
-  const pokemon = await getPokemonData([
-    "zygarde-10-power-construct",
-    "pikachu",
-    "snorlax",
-    "charizard",
-  ]);
+  const pokemon = await getPokemonData(Object.values(pokemonSets).map((set) => set.id));
 
   return (
     <html lang="en">

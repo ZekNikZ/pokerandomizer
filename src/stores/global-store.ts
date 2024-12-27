@@ -50,7 +50,7 @@ export type GlobalStore = GlobalState & GlobalActions;
 
 export const defaultInitState: GlobalState = {
   teams: [],
-  nextTeamIds: ["133105799818903552", "133105799818903552", ""],
+  nextTeamIds: ["133105799818903552", "133105799818903552"],
   pokemon: {},
   pokemonSets: {},
   settings: {

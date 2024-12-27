@@ -12,7 +12,7 @@ export const env = createEnv({
     DISCORD_BOT_TOKEN: z.string(),
     DISCORD_GUILD_ID: z.string(),
     SPREADSHEET_ID: z.string(),
-    API_KEY: z.string(),
+    GOOGLE_API_KEY: z.string(),
   },
 
   /**
@@ -34,8 +34,8 @@ export const env = createEnv({
     DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN,
     DISCORD_GUILD_ID: process.env.DISCORD_GUILD_ID,
     SPREADSHEET_ID: process.env.SPREADSHEET_ID,
-    API_KEY: process.env.API_KEY,
-    
+    GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
+
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

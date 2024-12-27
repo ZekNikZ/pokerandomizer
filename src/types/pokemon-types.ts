@@ -40,6 +40,8 @@ export interface PokemonSet {
   id: string;
   // Pokemon Showdown Name (e.g., "Zygarde-10%") - use the function in utils/pokemon.ts for this
   showdownName: string;
+  // Nickname
+  nickname?: string;
   // Tier (e.g., 1, 2, 3, 4)
   tier: number;
   // Held item name (e.g., "Choice Scarf")
@@ -52,4 +54,6 @@ export interface PokemonSet {
   moves: string[];
   // EVs (e.g., { HP: 80, Atk: 74, SpD: 23 })
   evs: Partial<Record<EVStats, number>>;
+  // Tera Type (e.g., "Grass")
+  teraType: string;
 }

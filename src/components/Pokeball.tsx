@@ -16,6 +16,7 @@ export function Pokeball({ pokemonUuid }: Props) {
     state.teams.flatMap((team) => team.pokemon).find((pokemon) => pokemon.uuid === pokemonUuid)
   );
   const openPokeball = useGlobalStore((state) => state.openPokeball);
+  console.log(pokemon);
   const pokemonData = useGlobalStore((state) =>
     pokemon ? state.pokemon[pokemon?.pokemonId] : undefined
   );
@@ -28,7 +29,7 @@ export function Pokeball({ pokemonUuid }: Props) {
   );
   const pokemonTierHints = useGlobalStore((state) => state.settings["Pokemon Tier Hints"]);
 
-  const [playSound] = useSound(pokemonData!.cry);
+  const [playSound] = useSound(pokemonData?.cry ?? "");
   const [soundPlayed, setSoundPlayed] = useState(false);
 
   useEffect(() => {

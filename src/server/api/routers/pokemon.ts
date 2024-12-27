@@ -19,39 +19,24 @@ export const pokemonRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       // Fetch data from Google Sheets
       const pokemonSets = await getPokemonSetData();
-      const availablePokemon = pokemonSets.map((set) => ({
-        uuid: uuidv4(),
-         pokemonId: set.id}));
       return {
         teams: Object.fromEntries(
           input.teamUuids.map((teamUuid) => {
             // TODO: EVAN: Randomize the team
-            const pokemon: { uuid: string; pokemonId: string }[] = _.shuffle([
-              {
+            // TODO:
+            //   1-2 Tier 1
+            //   0-3 Tier 2
+            //   0-3 Tier 3
+            //   1 Tier 4
+            // GUARANTEED TIER 1 & 4, rest random
+            const pokemon: { uuid: string; pokemonId: string }[] = _.shuffle(
+              Object.keys(pokemonSets)
+            )
+              .slice(0, 6)
+              .map((pokemonId) => ({
                 uuid: uuidv4(),
-                pokemonId: "zygarde-10-power-construct",
-              },
-              {
-                uuid: uuidv4(),
-                pokemonId: "charizard",
-              },
-              {
-                uuid: uuidv4(),
-                pokemonId: "pikachu",
-              },
-              {
-                uuid: uuidv4(),
-                pokemonId: "pikachu",
-              },
-              {
-                uuid: uuidv4(),
-                pokemonId: "snorlax",
-              },
-              {
-                uuid: uuidv4(),
-                pokemonId: "snorlax",
-              },
-            ]);
+                pokemonId,
+              }));
 
             return [teamUuid, pokemon];
           })
@@ -102,7 +87,7 @@ export const pokemonRouter = createTRPCRouter({
               },
               body: JSON.stringify(
                 //teamString,
-                payload,
+                payload
               ),
             });
 
