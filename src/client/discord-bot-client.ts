@@ -13,8 +13,14 @@ export default async function getDiscordClient(): Promise<Client> {
     return readyClient;
   }
 
-  return await new Promise((resolve) => {
+  return await new Promise((resolve, reject) => {
+    function err(err: Error) {
+      console.error("Error connecting to Discord:", err);
+      reject(err);
+    }
+    discordClient.once("error", err);
     discordClient.once("ready", () => {
+      discordClient.removeListener("error", err);
       console.log("Discord bot is ready!");
       readyClient = discordClient;
       resolve(readyClient);
