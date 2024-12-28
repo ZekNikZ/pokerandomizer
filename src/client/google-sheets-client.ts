@@ -32,7 +32,7 @@ export const getPokemonSetData = unstable_cache(
     const sets: PokemonSet[] = rows.map((row) => {
       const id = row[17] ?? getPokemonIdFromName(row[0] ?? "");
       const showdownName = getShowdownNameFromName(row[0] ?? "");
-      const tier = Number(row[1]);
+      const tier = Number(row[1] ?? "0");
       const item = row[2] ?? "";
       const ability = row[3] ?? "";
       const nickname = row[4];
@@ -64,7 +64,7 @@ export const getPokemonSetData = unstable_cache(
 
     console.log(`[Google Sheets] Loaded sets for ${sets.length} pokemon`);
 
-    return Object.fromEntries(sets.map((set) => [set.id, set]));
+    return Object.fromEntries(sets.filter((set) => set.tier).map((set) => [set.id, set]));
   },
   ["pokemon-sets"],
   { revalidate: 300, tags: ["pokemon-sets"] }
