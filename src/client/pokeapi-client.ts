@@ -61,6 +61,8 @@ export async function getPokemonData(pokemon: string[]): Promise<Record<string, 
     ])
   );
 
+  console.log(`[PokeAPI] Loaded data for ${Object.keys(result).length} pokemon`);
+
   for (const pokemonId of pokemon) {
     if (!result[pokemonId]) {
       console.warn(`No data found for pokemon ${pokemonId}`);

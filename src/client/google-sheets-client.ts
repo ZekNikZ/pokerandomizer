@@ -62,6 +62,8 @@ export const getPokemonSetData = unstable_cache(
       };
     });
 
+    console.log(`[Google Sheets] Loaded sets for ${sets.length} pokemon`);
+
     return Object.fromEntries(sets.map((set) => [set.id, set]));
   },
   ["pokemon-sets"],
