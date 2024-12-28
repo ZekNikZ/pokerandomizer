@@ -2,6 +2,7 @@ import { gql } from "@/__generated__";
 import { type PokemonTypeName, type Pokemon } from "@/types/pokemon-types";
 import { HttpLink, InMemoryCache, ApolloClient } from "@apollo/client";
 import { registerApolloClient } from "@apollo/experimental-nextjs-app-support";
+import { unstable_cache } from "next/cache";
 
 export const { getClient, query, PreloadQuery } = registerApolloClient(() => {
   return new ApolloClient({
@@ -12,9 +13,10 @@ export const { getClient, query, PreloadQuery } = registerApolloClient(() => {
   });
 });
 
-export async function getPokemonData(pokemon: string[]): Promise<Record<string, Pokemon>> {
-  const { data } = await query({
-    query: gql(`
+export const getPokemonData = unstable_cache(
+  async function (pokemon: string[]): Promise<Record<string, Pokemon>> {
+    const { data } = await query({
+      query: gql(`
       query pokemonQuery($pokemon: [String!]) {
         pokemon: pokemon_v2_pokemon(where: { name: { _in: $pokemon } }) {
           name
@@ -40,34 +42,38 @@ export async function getPokemonData(pokemon: string[]): Promise<Record<string, 
         }
       }
     `),
-    variables: {
-      pokemon,
-    },
-  });
-
-  const result = Object.fromEntries(
-    data.pokemon.map((pokemon) => [
-      pokemon.name,
-      {
-        id: pokemon.name,
-        name: pokemon.species!.names[0]!.name,
-        types: pokemon.types.map((type) => ({
-          id: type.type!.id,
-          name: type.type!.name as PokemonTypeName,
-        })),
-        sprite: pokemon.sprites[0]?.default as string,
-        cry: pokemon.cries[0]?.cry as string,
+      variables: {
+        pokemon,
       },
-    ])
-  );
+      fetchPolicy: "no-cache",
+    });
 
-  console.log(`[PokeAPI] Loaded data for ${Object.keys(result).length} pokemon`);
+    const result = Object.fromEntries(
+      data.pokemon.map((pokemon) => [
+        pokemon.name,
+        {
+          id: pokemon.name,
+          name: pokemon.species!.names[0]!.name,
+          types: pokemon.types.map((type) => ({
+            id: type.type!.id,
+            name: type.type!.name as PokemonTypeName,
+          })),
+          sprite: pokemon.sprites[0]?.default as string,
+          cry: pokemon.cries[0]?.cry as string,
+        },
+      ])
+    );
 
-  for (const pokemonId of pokemon) {
-    if (!result[pokemonId]) {
-      console.warn(`No data found for pokemon ${pokemonId}`);
+    console.log(`[PokeAPI] Loaded data for ${Object.keys(result).length} pokemon`);
+
+    for (const pokemonId of pokemon) {
+      if (!result[pokemonId]) {
+        console.warn(`No data found for pokemon ${pokemonId}`);
+      }
     }
-  }
 
-  return result;
-}
+    return result;
+  },
+  ["pokemon-data"],
+  { revalidate: 300, tags: ["pokemon-data"] }
+);

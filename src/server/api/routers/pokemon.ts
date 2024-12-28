@@ -6,6 +6,7 @@ import { getPokemonSetData } from "@/client/google-sheets-client";
 import getDiscordClient from "@/client/discord-bot-client";
 import { type GlobalState } from "@/stores/global-store";
 import { stripIndentation } from "@/utils/strings";
+import { getShowdownFormatFromSet } from "@/utils/pokemon";
 
 export const pokemonRouter = createTRPCRouter({
   generateTeams: publicProcedure
@@ -123,20 +124,7 @@ export const pokemonRouter = createTRPCRouter({
           const teamString = team.pokemon
             .map((pokemonId) => {
               const pokemon = pokemonSets[pokemonId]!;
-
-              return stripIndentation(`
-                ${pokemon.nickname && pokemon.nickname.length > 0 ? pokemon.nickname : pokemon.showdownName} (${pokemon.showdownName}) @ ${pokemon.item}
-                Ability: ${pokemon.ability}
-                Tera Type: ${pokemon.teraType}
-                Level: 100
-                EVs: ${Object.entries(pokemon.evs)
-                  .filter(([_, value]) => value != undefined)
-                  .map(([stat, value]) => `${value} ${stat}`)
-                  .join(` / `)}
-                ${pokemon.nature} Nature
-                Moves:
-                ${pokemon.moves.map((move) => `- ${move}`).join(`\n`)}
-              `);
+              return getShowdownFormatFromSet(pokemon);
             })
             .join("\n\n");
 
