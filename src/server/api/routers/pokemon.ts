@@ -73,7 +73,7 @@ export const pokemonRouter = createTRPCRouter({
           picks.forEach((pick) => previousPicks.add(pick.pokemonId));
         }
 
-        teams[teamId] = picks;
+        teams[teamId] = _.shuffle(picks);
       }
 
       return {
