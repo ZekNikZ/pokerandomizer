@@ -1,18 +1,18 @@
 import { type PokemonSet } from "@/types/pokemon-types";
 import { getPokemonIdFromName, getShowdownNameFromName } from "@/utils/pokemon";
 
-// TODO: EVAN: Build Google Sheets Integration
-
 export async function getPokemonSetData(): Promise<Record<string, PokemonSet>> {
-  // TODO: Actually fetch data from Google Sheets
-
   // Get request to Google Sheets API to get data for Pokemon Sets
   const response = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/1aOdHsVPYuLqEKeDoFmxwJ1u0_d_H6RYZy7d32hUqfDw/values/Sets!A:Q?key=${process.env.GOOGLE_API_KEY}`,
+    `https://sheets.googleapis.com/v4/spreadsheets/1aOdHsVPYuLqEKeDoFmxwJ1u0_d_H6RYZy7d32hUqfDw/values/Sets!A:R?key=${process.env.GOOGLE_API_KEY}`,
     {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+      },
+      cache: "force-cache",
+      next: {
+        revalidate: 300,
       },
     }
   );
@@ -21,8 +21,7 @@ export async function getPokemonSetData(): Promise<Record<string, PokemonSet>> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const data = await response.json();
 
-  // TODO: Transform data into PokemonSet, look at typedef for PokemonSet to see how to constuct this object
-
+  // Transform data into PokemonSet, look at typedef for PokemonSet to see how to constuct this object
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   const values = data.values as string[][];
   const rows = values.slice(1);

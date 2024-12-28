@@ -3,7 +3,7 @@
 import { TeamPokeballs } from "@/components/TeamPokeballs";
 import { useGlobalStore } from "@/stores/global-store-provider";
 import { Dialog, DialogPanel, DialogTitle, Field, Label, Select } from "@headlessui/react";
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 
 export default function HomePage() {
   const teams = useGlobalStore((state) => state.teams);
@@ -15,11 +15,16 @@ export default function HomePage() {
   const changeSetting = useGlobalStore((state) => state.changeSetting);
   const changeNextTeamName = useGlobalStore((state) => state.changeNextTeamId);
   const postTeamsToDiscord = useGlobalStore((state) => state.postTeamsToDiscord);
+  const fetchDiscordUserMapping = useGlobalStore((state) => state.fetchDiscordUserMapping);
   const discordUserMapping = useGlobalStore((state) => state.discordUserMapping);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [newRoundOpen, setNewRoundOpen] = useState(false);
   const firstInputRef = useRef<HTMLSelectElement>(null);
+
+  useEffect(() => {
+    void fetchDiscordUserMapping();
+  }, [fetchDiscordUserMapping]);
 
   const newRoundPressed = () => {
     setNewRoundOpen(true);

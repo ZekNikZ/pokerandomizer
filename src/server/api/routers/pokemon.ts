@@ -8,6 +8,9 @@ import dedent from "dedent";
 import { getDiscordUserMapping } from "@/utils/discord";
 
 export const pokemonRouter = createTRPCRouter({
+  getDiscordMapping: publicProcedure.query(async () => {
+    return await getDiscordUserMapping(process.env.DISCORD_GUILD_ID!);
+  }),
   generateTeams: publicProcedure
     .input(
       z.object({
@@ -92,62 +95,57 @@ export const pokemonRouter = createTRPCRouter({
             pokemon: z.array(z.string()),
           })
         ),
+        discordUserMapping: z.record(z.string(), z.string()),
       })
     )
     .mutation(async ({ input }) => {
       // Fetch data from Google Sheets
       const pokemonSets = await getPokemonSetData();
 
-      const discordUserMapping = await getDiscordUserMapping(process.env.DISCORD_GUILD_ID!);
-
-      // TODO: EVAN: Post team to Discord
-      const { teams } = input;
+      // Post teams to Discord
       await Promise.allSettled(
-        teams.map(async (team) => {
-          // TODO: Construct team string in standard format for Showdown
-          /*
-          - Pokémon Name @ Item
-            Ability: Ability Name
-            Level: 100
-            EVs: X HP / Y Atk / Z Def / W SpA / V SpD / U Spe
-            Nature: Nature Name
-            Moves:
-            - Move 1
-            - Move 2
-            - Move 3
-            - Move 4
-          */
-
-          //Construct in standard format for Showdown
+        input.teams.map(async (team) => {
+          // Construct in standard format for Showdown
           const teamString = team.pokemon
             .map((pokemonId) => {
               const pokemon = pokemonSets[pokemonId]!;
-              return dedent`${pokemon.nickname && pokemon.nickname.length > 0 ? pokemon.nickname : pokemon.showdownName} (${pokemon.showdownName}) @ ${pokemon.item}
-            Ability: ${pokemon.ability}
-            Tera Type: ${pokemon.teraType}
-            Level: 100
-            EVs: ${Object.entries(pokemon.evs)
-              .filter(([_, value]) => value != undefined)
-              .map(([stat, value]) => `${value} ${stat}`)
-              .join(` / `)}
-            ${pokemon.nature} Nature
-            Moves: \n ${pokemon.moves.map((move) => `- ${move}`).join(`\n`)}
-          `;
+
+              return dedent`
+                ${pokemon.nickname && pokemon.nickname.length > 0 ? pokemon.nickname : pokemon.showdownName} (${pokemon.showdownName}) @ ${pokemon.item}
+                Ability: ${pokemon.ability}
+                Tera Type: ${pokemon.teraType}
+                Level: 100
+                EVs: ${Object.entries(pokemon.evs)
+                  .filter(([_, value]) => value != undefined)
+                  .map(([stat, value]) => `${value} ${stat}`)
+                  .join(` / `)}
+                ${pokemon.nature} Nature
+                Moves:
+                ${pokemon.moves.map((move) => `- ${move}`).join(`\n`)}
+              `;
             })
             .join("\n\n");
-          // TODO: Post to Discord
-          // Look up Discord Webhooks for this. Use the process.env.DISCORD_WEBHOOK_URL environment variable and format it as you feel
-          // If you want to get really fancy, you can call getPokemonData() here as well to grab the sprites and stuff too
+
+          // Post to Discord
+          const discordUserMapping = input.discordUserMapping;
+          const content = `
+            Matchup: ${input.teams.map((team) => discordUserMapping[team.owner]).join(" vs ")}
+            Team: ${discordUserMapping[team.owner]}
+            \`\`\`
+            ${teamString}
+            \`\`\`
+          `;
+
+          // DM team to owner
           try {
-            await (
-              await discordClient.users.fetch(team.owner)
-            ).send({ content: "``` " + teamString + "```" });
+            await (await discordClient.users.fetch(team.owner)).send({ content });
           } catch (error) {
             console.error("Error posting team to Discord:", error);
           }
 
+          // Post to Discord webhook
           const payload = {
-            content: `Matchup: ${teams.map((team) => discordUserMapping[team.owner]).join(" vs ")} \n Team: ${discordUserMapping[team.owner]} \n ${"```"}${teamString}${"```"}`,
+            content,
           };
           try {
             const webhook = process.env.DISCORD_WEBHOOK_URL!;
@@ -156,12 +154,8 @@ export const pokemonRouter = createTRPCRouter({
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify(
-                //teamString,
-                payload
-              ),
+              body: JSON.stringify(payload),
             });
-
             if (!response.ok) {
               throw new Error("Failed to post to Discord");
             }

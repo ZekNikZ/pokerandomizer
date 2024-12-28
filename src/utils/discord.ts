@@ -14,7 +14,7 @@ export async function getDiscordUserMapping(guildId: string): Promise<Record<str
     // Create mappings
     const mappings: Record<string, string> = {};
     members.forEach((member) => {
-      mappings[member.user.id] = member.nickname ?? `@${member.user.username}`;
+      mappings[member.user.id] = member.nickname ?? member.user.displayName;
     });
 
     return mappings;

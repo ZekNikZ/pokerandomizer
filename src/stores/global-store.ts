@@ -47,6 +47,7 @@ export type GlobalActions = {
   ) => void;
   changeNextTeamId: (index: number, name: string) => void;
   postTeamsToDiscord: () => Promise<void>;
+  fetchDiscordUserMapping: () => Promise<void>;
 };
 
 export type GlobalStore = GlobalState & GlobalActions;
@@ -216,7 +217,12 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
                 owner: team.owner,
                 pokemon: team.pokemon.map((pokemon) => pokemon.pokemonId),
               })),
+              discordUserMapping: get().discordUserMapping,
             });
+          },
+          fetchDiscordUserMapping: async () => {
+            const discordUserMapping = await api.pokemon.getDiscordMapping.query();
+            set(() => ({ discordUserMapping }));
           },
         }),
         {
@@ -224,6 +230,7 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
           partialize: (state) => ({
             nextTeamIds: state.nextTeamIds,
             settings: state.settings,
+            discordUserMapping: state.discordUserMapping,
           }),
           merge: (persistedState, currentState) => _.merge(currentState, persistedState),
         }
