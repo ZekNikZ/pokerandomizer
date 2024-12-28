@@ -4,13 +4,9 @@ import { uuidv4 } from "@/utils/uuids";
 import _ from "lodash";
 import { getPokemonSetData } from "@/client/google-sheets-client";
 import dedent from "dedent";
-import { getDiscordUserMapping } from "@/utils/discord";
 import getDiscordClient from "@/client/discord-bot-client";
 
 export const pokemonRouter = createTRPCRouter({
-  getDiscordMapping: publicProcedure.query(async () => {
-    return await getDiscordUserMapping(process.env.DISCORD_GUILD_ID!);
-  }),
   generateTeams: publicProcedure
     .input(
       z.object({

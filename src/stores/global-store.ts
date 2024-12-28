@@ -47,7 +47,6 @@ export type GlobalActions = {
   ) => void;
   changeNextTeamId: (index: number, name: string) => void;
   postTeamsToDiscord: () => Promise<void>;
-  fetchDiscordUserMapping: () => Promise<void>;
 };
 
 export type GlobalStore = GlobalState & GlobalActions;
@@ -219,10 +218,6 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
               })),
               discordUserMapping: get().discordUserMapping,
             });
-          },
-          fetchDiscordUserMapping: async () => {
-            const discordUserMapping = await api.pokemon.getDiscordMapping.query();
-            set(() => ({ discordUserMapping }));
           },
         }),
         {
