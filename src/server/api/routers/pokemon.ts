@@ -3,9 +3,9 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { uuidv4 } from "@/utils/uuids";
 import _ from "lodash";
 import { getPokemonSetData } from "@/client/google-sheets-client";
-import dedent from "dedent";
 import getDiscordClient from "@/client/discord-bot-client";
 import { type GlobalState } from "@/stores/global-store";
+import { stripIndentation } from "@/utils/strings";
 
 export const pokemonRouter = createTRPCRouter({
   generateTeams: publicProcedure
@@ -124,7 +124,7 @@ export const pokemonRouter = createTRPCRouter({
             .map((pokemonId) => {
               const pokemon = pokemonSets[pokemonId]!;
 
-              return dedent`
+              return stripIndentation(`
                 ${pokemon.nickname && pokemon.nickname.length > 0 ? pokemon.nickname : pokemon.showdownName} (${pokemon.showdownName}) @ ${pokemon.item}
                 Ability: ${pokemon.ability}
                 Tera Type: ${pokemon.teraType}
@@ -136,14 +136,14 @@ export const pokemonRouter = createTRPCRouter({
                 ${pokemon.nature} Nature
                 Moves:
                 ${pokemon.moves.map((move) => `- ${move}`).join(`\n`)}
-              `;
+              `);
             })
             .join("\n\n");
 
           // Generate content for Discord
           const generationSettings = team.generationSettings;
           const discordUserMapping = input.discordUserMapping;
-          const content = dedent`
+          const content = stripIndentation(`
             **Matchup:** ${input.teams.map((team) => discordUserMapping[team.owner]).join(" vs ")}
             **Team:** ${discordUserMapping[team.owner]}
             **Generation Settings:**
@@ -154,7 +154,7 @@ export const pokemonRouter = createTRPCRouter({
             \`\`\`
             ${teamString}
             \`\`\`
-          `;
+          `);
 
           // DM team to owner
           try {
