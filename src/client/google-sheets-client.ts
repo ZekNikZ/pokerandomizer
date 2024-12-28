@@ -13,10 +13,10 @@ export const getPokemonSetData = unstable_cache(
         headers: {
           "Content-Type": "application/json",
         },
-        // cache: "force-cache",
-        // next: {
-        //   revalidate: 300,
-        // },
+        cache: "force-cache",
+        next: {
+          revalidate: 300,
+        },
       }
     );
 
