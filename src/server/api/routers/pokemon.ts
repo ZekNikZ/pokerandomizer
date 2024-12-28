@@ -5,6 +5,7 @@ import _ from "lodash";
 import { getPokemonSetData } from "@/client/google-sheets-client";
 import dedent from "dedent";
 import getDiscordClient from "@/client/discord-bot-client";
+import { type GlobalState } from "@/stores/global-store";
 
 export const pokemonRouter = createTRPCRouter({
   generateTeams: publicProcedure
@@ -28,14 +29,22 @@ export const pokemonRouter = createTRPCRouter({
 
       // Parse randomization settings
       const randomizationSettings = input.randomizationSettings.split(",");
-      const tiers = randomizationSettings.map((tier) => {
-        if (tier.includes("-")) {
-          const [min, max] = tier.split("-").map((tier) => Number(tier)) as [number, number];
-          return Math.floor(Math.random() * (max - min + 1)) + min;
-        } else {
-          return Number(tier);
-        }
-      });
+      const tiers = randomizationSettings
+        .map((tier) => {
+          if (tier.includes("-")) {
+            const [min, max] = tier.split("-").map((tier) => Number(tier)) as [number, number];
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+          } else {
+            return Number(tier);
+          }
+        })
+        .sort((a, b) => a - b);
+      const generationSettings: GlobalState["teams"][number]["generationSettings"] = {
+        preventCrossTeamDuplicates: input.preventCrossTeamDuplicates,
+        preventSameRoundDuplicates: input.preventSameRoundDuplicates,
+        preventSameTeamDuplicates: input.preventSameTeamDuplicates,
+        tiers,
+      };
 
       // Setup previous picks
       const previousPicks = new Set<string>();
@@ -79,6 +88,7 @@ export const pokemonRouter = createTRPCRouter({
 
       return {
         teams,
+        generationSettings,
       };
     }),
   postTeamsToDiscord: publicProcedure
@@ -89,6 +99,14 @@ export const pokemonRouter = createTRPCRouter({
             uuid: z.string(),
             owner: z.string(),
             pokemon: z.array(z.string()),
+            generationSettings: z.optional(
+              z.object({
+                preventSameTeamDuplicates: z.boolean(),
+                preventCrossTeamDuplicates: z.boolean(),
+                preventSameRoundDuplicates: z.boolean(),
+                tiers: z.array(z.number()),
+              })
+            ),
           })
         ),
         discordUserMapping: z.record(z.string(), z.string()),
@@ -123,10 +141,16 @@ export const pokemonRouter = createTRPCRouter({
             .join("\n\n");
 
           // Post to Discord
+          const generationSettings = team.generationSettings;
           const discordUserMapping = input.discordUserMapping;
           const content = dedent`
             **Matchup:** ${input.teams.map((team) => discordUserMapping[team.owner]).join(" vs ")}
             **Team:** ${discordUserMapping[team.owner]}
+            **Generation Settings:**
+            - Prevent Same Team Duplicates: ${generationSettings?.preventSameTeamDuplicates ?? "N/A"}
+            - Prevent Same Round Duplicates: ${generationSettings?.preventSameRoundDuplicates ?? "N/A"}
+            - Prevent Cross Team Duplicates: ${generationSettings?.preventCrossTeamDuplicates ?? "N/A"}
+            - Tiers: ${generationSettings?.tiers.join(", ") ?? "N/A"}
             \`\`\`
             ${teamString}
             \`\`\`

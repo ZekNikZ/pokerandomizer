@@ -16,6 +16,12 @@ export type GlobalState = {
       animatingIn: boolean;
       pokeballOpen: boolean;
     }[];
+    generationSettings?: {
+      preventSameTeamDuplicates: boolean;
+      preventCrossTeamDuplicates: boolean;
+      preventSameRoundDuplicates: boolean;
+      tiers: number[];
+    };
     previousPicks: string[];
   }[];
   nextTeamIds: string[];
@@ -106,6 +112,7 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
                     animatingIn: true,
                     pokeballOpen: false,
                   })) ?? team.pokemon,
+                generationSettings: picks.generationSettings,
               })),
             }));
             const uuids = Object.values(picks.teams).flatMap((team) =>
@@ -147,6 +154,7 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
                     animatingIn: true,
                     pokeballOpen: false,
                   })) ?? team.pokemon,
+                generationSettings: picks.generationSettings,
               })),
             }));
             const uuids = Object.values(picks.teams).flatMap((team) =>
@@ -215,6 +223,7 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
                 uuid: team.uuid,
                 owner: team.owner,
                 pokemon: team.pokemon.map((pokemon) => pokemon.pokemonId),
+                generationSettings: team.generationSettings,
               })),
               discordUserMapping: get().discordUserMapping,
             });
