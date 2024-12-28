@@ -124,9 +124,9 @@ export const pokemonRouter = createTRPCRouter({
 
           // Post to Discord
           const discordUserMapping = input.discordUserMapping;
-          const content = `
-            Matchup: ${input.teams.map((team) => discordUserMapping[team.owner]).join(" vs ")}
-            Team: ${discordUserMapping[team.owner]}
+          const content = dedent`
+            **Matchup:** ${input.teams.map((team) => discordUserMapping[team.owner]).join(" vs ")}
+            **Team:** ${discordUserMapping[team.owner]}
             \`\`\`
             ${teamString}
             \`\`\`
