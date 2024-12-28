@@ -20,15 +20,12 @@ export async function getPokemonSetData(): Promise<Record<string, PokemonSet>> {
   // Parse response as JSON
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const data = await response.json();
-  console.log(data);
 
   // TODO: Transform data into PokemonSet, look at typedef for PokemonSet to see how to constuct this object
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   const values = data.values as string[][];
   const rows = values.slice(1);
-
-  console.log(values);
 
   const sets: PokemonSet[] = rows.map((row) => {
     const id = row[17] ?? getPokemonIdFromName(row[0] ?? "");

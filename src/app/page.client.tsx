@@ -3,7 +3,7 @@
 import { TeamPokeballs } from "@/components/TeamPokeballs";
 import { useGlobalStore } from "@/stores/global-store-provider";
 import { Dialog, DialogPanel, DialogTitle, Field, Label, Select } from "@headlessui/react";
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 
 export default function HomePage() {
   const teams = useGlobalStore((state) => state.teams);
@@ -93,7 +93,7 @@ export default function HomePage() {
                   <p onClick={() => changeSetting(key as keyof typeof settings, !value)}>{key}</p>
                 </div>
               ))}
-            {/* {(
+            {(
               Object.entries(settings).filter(([_, value]) => typeof value === "string") as [
                 keyof typeof settings,
                 string,
@@ -104,11 +104,11 @@ export default function HomePage() {
                 <input
                   value={value}
                   placeholder={key}
-                  onChange={(event) => void changeSetting(key, event.target.checked)}
+                  onChange={(event) => void changeSetting(key, event.target.value)}
                   className="h-4 w-full rounded border-gray-500 px-2 py-4 text-black"
                 />
               </Fragment>
-            ))} */}
+            ))}
           </DialogPanel>
         </div>
       </Dialog>

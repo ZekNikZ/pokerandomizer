@@ -17,8 +17,6 @@ export async function getDiscordUserMapping(guildId: string): Promise<Record<str
       mappings[member.user.id] = member.nickname ?? `@${member.user.username}`;
     });
 
-    console.log(mappings);
-
     return mappings;
   } catch (error) {
     console.error("Error fetching Discord guild members:", error);
