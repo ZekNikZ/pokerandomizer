@@ -140,7 +140,7 @@ export const pokemonRouter = createTRPCRouter({
             })
             .join("\n\n");
 
-          // Post to Discord
+          // Generate content for Discord
           const generationSettings = team.generationSettings;
           const discordUserMapping = input.discordUserMapping;
           const content = dedent`
