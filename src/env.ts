@@ -13,6 +13,7 @@ export const env = createEnv({
     DISCORD_GUILD_ID: z.string(),
     SPREADSHEET_ID: z.string(),
     GOOGLE_API_KEY: z.string(),
+    WS_NO_BUFFER_UTIL: z.literal("true"),
   },
 
   /**
@@ -35,7 +36,7 @@ export const env = createEnv({
     DISCORD_GUILD_ID: process.env.DISCORD_GUILD_ID,
     SPREADSHEET_ID: process.env.SPREADSHEET_ID,
     GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
-
+    WS_NO_BUFFER_UTIL: process.env.WS_NO_BUFFER_UTIL,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

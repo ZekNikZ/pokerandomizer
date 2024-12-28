@@ -45,7 +45,7 @@ export async function getPokemonData(pokemon: string[]): Promise<Record<string, 
     },
   });
 
-  return Object.fromEntries(
+  const result = Object.fromEntries(
     data.pokemon.map((pokemon) => [
       pokemon.name,
       {
@@ -60,4 +60,12 @@ export async function getPokemonData(pokemon: string[]): Promise<Record<string, 
       },
     ])
   );
+
+  for (const pokemonId of pokemon) {
+    if (!result[pokemonId]) {
+      console.warn(`No data found for pokemon ${pokemonId}`);
+    }
+  }
+
+  return result;
 }

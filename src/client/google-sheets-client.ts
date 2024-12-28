@@ -64,7 +64,6 @@ export const getPokemonSetData = unstable_cache(
 
     return Object.fromEntries(sets.map((set) => [set.id, set]));
   },
-
   ["pokemon-sets"],
   { revalidate: 300, tags: ["pokemon-sets"] }
 );
