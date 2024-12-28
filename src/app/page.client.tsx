@@ -109,6 +109,24 @@ export default function HomePage() {
                 />
               </Fragment>
             ))}
+            {(
+              Object.entries(settings).filter(([_, value]) => typeof value === "number") as [
+                keyof typeof settings,
+                number,
+              ][]
+            ).map(([key, value]) => (
+              <Fragment key={key}>
+                <p>{key}</p>
+                <input
+                  value={value}
+                  placeholder={key}
+                  onChange={(event) => void changeSetting(key, Number(event.target.value))}
+                  type="number"
+                  step="0.05"
+                  className="h-4 w-full rounded border-gray-500 px-2 py-4 text-black"
+                />
+              </Fragment>
+            ))}
           </DialogPanel>
         </div>
       </Dialog>

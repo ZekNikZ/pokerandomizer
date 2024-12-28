@@ -30,6 +30,7 @@ export type GlobalState = {
     "Pokemon Tier Hints": boolean;
     "Auto Post Teams to Discord": boolean;
     "Randomizer Settings": string;
+    "Sound Volume": number;
   };
   discordUserMapping: Record<string, string>;
 };
@@ -64,6 +65,7 @@ export const defaultInitState: GlobalState = {
     "Pokemon Tier Hints": true,
     "Auto Post Teams to Discord": true,
     "Randomizer Settings": "1,4,1-4,1-4,1-4,1-4",
+    "Sound Volume": 1,
   },
   discordUserMapping: {},
 };

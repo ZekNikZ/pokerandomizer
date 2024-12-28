@@ -27,8 +27,9 @@ export function Pokeball({ pokemonUuid }: Props) {
     (state) => state.settings["Play Pokemon Sound When Opening Pokeball"]
   );
   const pokemonTierHints = useGlobalStore((state) => state.settings["Pokemon Tier Hints"]);
+  const volume = useGlobalStore((state) => state.settings["Sound Volume"]);
 
-  const [playSound] = useSound(pokemonData?.cry ?? "");
+  const [playSound] = useSound(pokemonData?.cry ?? "", { volume });
   const [soundPlayed, setSoundPlayed] = useState(false);
 
   useEffect(() => {
