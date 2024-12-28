@@ -3,9 +3,9 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { uuidv4 } from "@/utils/uuids";
 import _ from "lodash";
 import { getPokemonSetData } from "@/client/google-sheets-client";
-import discordClient from "@/client/discord-bot-client";
 import dedent from "dedent";
 import { getDiscordUserMapping } from "@/utils/discord";
+import getDiscordClient from "@/client/discord-bot-client";
 
 export const pokemonRouter = createTRPCRouter({
   getDiscordMapping: publicProcedure.query(async () => {
@@ -138,7 +138,7 @@ export const pokemonRouter = createTRPCRouter({
 
           // DM team to owner
           try {
-            await (await discordClient.users.fetch(team.owner)).send({ content });
+            await (await (await getDiscordClient()).users.fetch(team.owner)).send({ content });
           } catch (error) {
             console.error("Error posting team to Discord:", error);
           }

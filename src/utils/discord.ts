@@ -1,9 +1,9 @@
-import discordClient from "@/client/discord-bot-client";
+import getDiscordClient from "@/client/discord-bot-client";
 
 export async function getDiscordUserMapping(guildId: string): Promise<Record<string, string>> {
   // Get guild
   try {
-    const guild = await discordClient.guilds.fetch(guildId);
+    const guild = await (await getDiscordClient()).guilds.fetch(guildId);
     if (!guild) {
       throw new Error(`Guild with ID ${guildId} not found`);
     }

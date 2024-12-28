@@ -7,10 +7,19 @@ const discordClient = new Client({
   intents: ["Guilds", "GuildMessages", "GuildMembers", "DirectMessages"],
 });
 
-discordClient.once("ready", () => {
-  console.log("Discord bot is ready!");
-});
+let readyClient: Client | undefined = undefined;
+export default async function getDiscordClient(): Promise<Client> {
+  if (readyClient) {
+    return readyClient;
+  }
 
-void discordClient.login(process.env.DISCORD_BOT_TOKEN);
+  return await new Promise((resolve) => {
+    discordClient.once("ready", () => {
+      console.log("Discord bot is ready!");
+      readyClient = discordClient;
+      resolve(readyClient);
+    });
 
-export default discordClient;
+    void discordClient.login(process.env.DISCORD_BOT_TOKEN);
+  });
+}
