@@ -4,6 +4,7 @@ import { produce } from "immer";
 import { createStore } from "zustand/vanilla";
 import { devtools, persist } from "zustand/middleware";
 import { api } from "@/trpc/zustand";
+import _ from "lodash";
 
 export type GlobalState = {
   teams: {
@@ -28,6 +29,7 @@ export type GlobalState = {
     "Play Pokemon Sound When Opening Pokeball": boolean;
     "Pokemon Tier Hints": boolean;
     "Auto Post Teams to Discord": boolean;
+    "Randomizer Settings": string;
   };
   discordUserMapping: Record<string, string>;
 };
@@ -61,6 +63,7 @@ export const defaultInitState: GlobalState = {
     "Play Pokemon Sound When Opening Pokeball": true,
     "Pokemon Tier Hints": true,
     "Auto Post Teams to Discord": true,
+    "Randomizer Settings": "1,4,1-4,1-4,1-4,1-4",
   },
   discordUserMapping: {},
 };
@@ -90,6 +93,7 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
               preventCrossTeamDuplicates: settings["Prevent Cross Team Duplicates"],
               preventSameRoundDuplicates: settings["Prevent Same Round Duplicates"],
               previousPicks: [],
+              randomizationSettings: settings["Randomizer Settings"],
             });
             set((state) => ({
               teams: state.teams.map((team) => ({
@@ -130,6 +134,7 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
               preventCrossTeamDuplicates: settings["Prevent Cross Team Duplicates"],
               preventSameRoundDuplicates: settings["Prevent Same Round Duplicates"],
               previousPicks: teams.flatMap((team) => team.previousPicks),
+              randomizationSettings: settings["Randomizer Settings"],
             });
             set((state) => ({
               teams: state.teams.map((team) => ({
@@ -218,6 +223,7 @@ export const createGlobalStore = (initState?: Partial<GlobalState>) => {
             nextTeamIds: state.nextTeamIds,
             settings: state.settings,
           }),
+          merge: (persistedState, currentState) => _.merge(currentState, persistedState),
         }
       )
     )

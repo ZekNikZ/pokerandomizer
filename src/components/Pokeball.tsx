@@ -16,7 +16,6 @@ export function Pokeball({ pokemonUuid }: Props) {
     state.teams.flatMap((team) => team.pokemon).find((pokemon) => pokemon.uuid === pokemonUuid)
   );
   const openPokeball = useGlobalStore((state) => state.openPokeball);
-  console.log(pokemon);
   const pokemonData = useGlobalStore((state) =>
     pokemon ? state.pokemon[pokemon?.pokemonId] : undefined
   );

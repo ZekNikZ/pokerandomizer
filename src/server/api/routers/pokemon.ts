@@ -17,33 +17,70 @@ export const pokemonRouter = createTRPCRouter({
         preventCrossTeamDuplicates: z.boolean(),
         preventSameRoundDuplicates: z.boolean(),
         previousPicks: z.array(z.string()),
+        randomizationSettings: z.string(),
       })
     )
     .mutation(async ({ input }) => {
       // Fetch data from Google Sheets
       const pokemonSets = await getPokemonSetData();
-      return {
-        teams: Object.fromEntries(
-          input.teamUuids.map((teamUuid) => {
-            // TODO: EVAN: Randomize the team
-            // TODO:
-            //   1-2 Tier 1
-            //   0-3 Tier 2
-            //   0-3 Tier 3
-            //   1 Tier 4
-            // GUARANTEED TIER 1 & 4, rest random
-            const pokemon: { uuid: string; pokemonId: string }[] = _.shuffle(
-              Object.keys(pokemonSets)
-            )
-              .slice(0, 6)
-              .map((pokemonId) => ({
-                uuid: uuidv4(),
-                pokemonId,
-              }));
+      const pokemon = Object.values(pokemonSets).map((set) => ({
+        id: set.id,
+        tier: set.tier,
+      }));
 
-            return [teamUuid, pokemon];
-          })
-        ),
+      // Parse randomization settings
+      const randomizationSettings = input.randomizationSettings.split(",");
+      const tiers = randomizationSettings.map((tier) => {
+        if (tier.includes("-")) {
+          const [min, max] = tier.split("-").map((tier) => Number(tier)) as [number, number];
+          return Math.floor(Math.random() * (max - min + 1)) + min;
+        } else {
+          return Number(tier);
+        }
+      });
+
+      // Setup previous picks
+      const previousPicks = new Set<string>();
+      if (input.preventSameRoundDuplicates) {
+        input.previousPicks.forEach((pick) => previousPicks.add(pick));
+      }
+
+      // Randomize teams
+      const teams: Record<string, { uuid: string; pokemonId: string }[]> = {};
+      for (const teamId of input.teamUuids) {
+        // Initialize array for team
+        const picks: { uuid: string; pokemonId: string }[] = [];
+
+        // Randomize team
+        for (const tier of tiers) {
+          const shuffledPokemon = _.shuffle(pokemon);
+          // Randomize pokemon
+          let pokemonId = shuffledPokemon.find(
+            (pokemon) => pokemon.tier === tier && !previousPicks.has(pokemon.id)
+          )?.id;
+          if (!pokemonId) {
+            pokemonId = shuffledPokemon.find((pokemon) => pokemon.tier === tier)?.id;
+          }
+          if (!pokemonId) {
+            throw new Error(`No pokemon found for tier ${tier}`);
+          }
+
+          picks.push({ uuid: uuidv4(), pokemonId });
+
+          if (input.preventSameTeamDuplicates) {
+            previousPicks.add(pokemonId);
+          }
+        }
+
+        if (input.preventCrossTeamDuplicates) {
+          picks.forEach((pick) => previousPicks.add(pick.pokemonId));
+        }
+
+        teams[teamId] = _.shuffle(picks);
+      }
+
+      return {
+        teams,
       };
     }),
   postTeamsToDiscord: publicProcedure
